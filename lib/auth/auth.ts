@@ -3,12 +3,24 @@ import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { MongoClient } from "mongodb";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import initializeUserBoard from "../init-user-board";
 
 const client = new MongoClient(process.env.MONGODB_URI!);
 const db = client.db();
 export const auth = betterAuth({
 	database: mongodbAdapter(db, { client }),
 	emailAndPassword: { enabled: true },
+	databaseHooks: {
+		user: {
+			create: {
+				after: async (user) => {
+					if (user.id) {
+						initializeUserBoard(user.id);
+					}
+				},
+			},
+		},
+	}, //help with situaTION WHEN WE WANT TO DO CERTAIN things at different stages when the user is created
 });
 
 //Use auth to detect if there is a current user sign in - for server components

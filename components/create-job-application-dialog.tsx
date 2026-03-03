@@ -1,3 +1,5 @@
+"use client";
+
 import {
 	Dialog,
 	DialogContent,
@@ -12,19 +14,60 @@ import { Plus } from "lucide-react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
+import { useState } from "react";
+import { createJobApplication } from "@/lib/actions/job-applications";
 
 interface CreateJobApplicationProps {
 	columnId: string;
 	boardId: string;
-	onCreatedJob: () => void;
+	// onCreatedJob: () => void;
 }
+
+const INITIAL_FORM_DATA = {
+	company: "",
+	position: "",
+	location: "",
+	notes: "",
+	salary: "",
+	jobUrl: "",
+	tags: "",
+	description: "",
+};
+
 export default function CreateJobApplicationDialog({
 	columnId,
 	boardId,
-	onCreatedJob,
+	// onCreatedJob,
 }: CreateJobApplicationProps) {
+	const [open, setOpen] = useState<boolean>(false);
+	const [formData, setFormData] = useState(INITIAL_FORM_DATA);
+
+	async function handleFormSubmit(e: React.FormEvent) {
+		e.preventDefault();
+		try {
+			//SERVER ACTION(lib/actions/job-applications.ts file) - special function to be called on the server but call from client components.It is an alternative to making an API route
+			const result = await createJobApplication({
+				...formData,
+				columnId,
+				boardId,
+				tags: formData.tags
+					.split(",")
+					.map((tag) => tag.trim())
+					.filter((tag) => tag.length > 0),
+			});
+
+			if (!result.error) {
+				setFormData(INITIAL_FORM_DATA);
+				setOpen(false);
+			} else {
+				console.error("Failed to create a job:", result.error);
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	}
 	return (
-		<Dialog>
+		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger>
 				<Button
 					variant={"outline"}
@@ -39,35 +82,76 @@ export default function CreateJobApplicationDialog({
 					<DialogTitle>Add Job Application</DialogTitle>
 					<DialogDescription>Track new job applications</DialogDescription>
 				</DialogHeader>
-				<form className="space-y-5">
+				<form className="space-y-5" onSubmit={handleFormSubmit}>
 					<div className="space-y-5">
 						<div className="grid grid-cols-2 gap-4">
 							<div className="space-y-2">
 								<Label htmlFor="company">Company *</Label>
-								<Input id="company" readOnly />
+								<Input
+									id="company"
+									required
+									onChange={(e) =>
+										setFormData({ ...formData, company: e.target.value })
+									}
+									value={formData.company}
+								/>
 							</div>
 							<div className="space-y-2">
 								<Label htmlFor="position">Position *</Label>
-								<Input id="position" readOnly />
+								<Input
+									id="position"
+									required
+									onChange={(e) =>
+										setFormData({ ...formData, position: e.target.value })
+									}
+									value={formData.position}
+								/>
 							</div>
 						</div>
 						<div className="grid grid-cols-2 gap-4">
 							<div className="space-y-2">
 								<Label htmlFor="location">Location </Label>
-								<Input id="location" readOnly />
+								<Input
+									id="location"
+									onChange={(e) =>
+										setFormData({ ...formData, location: e.target.value })
+									}
+									value={formData.location}
+								/>
 							</div>
 							<div className="space-y-2">
 								<Label htmlFor="salary">Salary </Label>
-								<Input id="salary" placeholder="e.g. 10000e-20000e" readOnly />
+								<Input
+									id="salary"
+									placeholder="e.g. 10000e-20000e"
+									onChange={(e) =>
+										setFormData({ ...formData, salary: e.target.value })
+									}
+									value={formData.salary}
+								/>
 							</div>
 						</div>
 						<div className="space-y-3">
 							<Label htmlFor="jobUrl">Job Url </Label>
-							<Input id="jobUrl" placeholder="https://..." />
+							<Input
+								id="jobUrl"
+								placeholder="https://..."
+								onChange={(e) =>
+									setFormData({ ...formData, jobUrl: e.target.value })
+								}
+								value={formData.jobUrl}
+							/>
 						</div>
 						<div className="space-y-3">
 							<Label htmlFor="tags">Tags </Label>
-							<Input id="tags" placeholder="React, Typescript, ..." />
+							<Input
+								id="tags"
+								placeholder="React, Typescript, ..."
+								onChange={(e) =>
+									setFormData({ ...formData, tags: e.target.value })
+								}
+								value={formData.tags}
+							/>
 						</div>
 						<div className="space-y-3">
 							<Label htmlFor="description">Description </Label>
@@ -75,6 +159,10 @@ export default function CreateJobApplicationDialog({
 								id="description"
 								placeholder="Description of the role"
 								rows={3}
+								onChange={(e) =>
+									setFormData({ ...formData, description: e.target.value })
+								}
+								value={formData.description}
 							/>
 						</div>
 						<div className="space-y-3">
@@ -83,14 +171,22 @@ export default function CreateJobApplicationDialog({
 								id="notes"
 								placeholder="Description of the role"
 								rows={3}
+								onChange={(e) =>
+									setFormData({ ...formData, notes: e.target.value })
+								}
+								value={formData.notes}
 							/>
 						</div>
 					</div>
 					<DialogFooter>
-						<Button type="button" variant={"outline"}>
+						<Button
+							type="button"
+							variant={"outline"}
+							onClick={() => setOpen(false)}
+						>
 							Cancel
 						</Button>
-						<Button type="button">Add application</Button>
+						<Button type="submit">Add application</Button>
 					</DialogFooter>
 				</form>
 			</DialogContent>

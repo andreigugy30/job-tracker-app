@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { getSession } from "../auth/auth";
 import connectDB from "../db";
 import { Board, Column, JobApplication } from "../models";
@@ -102,11 +103,13 @@ export async function createJobApplication(data: JobApplicationData) {
 		$push: { jobApplications: jobApplication._id },
 	});
 
+	//Invalidate all cache in a specific route
+	revalidatePath("/dashboard");
+
 	// Mongoose documents contain lots of internal state and circular references
 	// which break Next.js server action serialization. Convert to a plain object
 	// before returning so the result can be structured‑cloned on the client.
 
-	// const plainJob = jobApplication.toObject();
 	const plainJob = JSON.parse(JSON.stringify(jobApplication));
 	console.log("🚀 ~ createJobApplication ~ plainJob:", plainJob);
 

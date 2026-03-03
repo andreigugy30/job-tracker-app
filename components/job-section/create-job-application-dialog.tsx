@@ -9,11 +9,11 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui//input";
+import { Textarea } from "@/components/ui//textarea";
 import { useState } from "react";
 import { createJobApplication } from "@/lib/actions/job-applications";
 

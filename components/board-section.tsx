@@ -6,7 +6,6 @@ import {
 	Calendar,
 	CheckCircle2,
 	Mic,
-	MoreHorizontal,
 	MoreVertical,
 	Trash2,
 	XCircle,
@@ -16,11 +15,11 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
-	DropdownMenuLabel,
 	DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
-import CreateJobApplicationDialog from "./create-job-application-dialog";
+import CreateJobApplicationDialog from "./job-section/create-job-application-dialog";
+import SortableJobCard from "./job-section/sortable-job-card";
 
 type BoardSectionProps = {
 	board: Board;
@@ -59,12 +58,15 @@ function DroppableColumn({
 	column,
 	config,
 	boardId,
+	sortedColumns,
 }: {
 	column: Column;
 	config: ColumnConfig;
 	boardId: string;
+	sortedColumns: Column[];
 }) {
-	console.log("🚀 ~ DroppableColumn ~ column:", column);
+	const sortedJobs =
+		column.jobApplications?.sort((a, b) => a.order - b.order) || [];
 	return (
 		<Card className="min-w-[300px] flex-shrink-0 shadow-md p-0">
 			<CardHeader
@@ -97,6 +99,13 @@ function DroppableColumn({
 				</div>
 			</CardHeader>
 			<CardContent className="space-y-2 pt-5 bg-gray-50/50 min-h-[400px] rounded-b-lg">
+				{sortedJobs.map((job, key) => (
+					<SortableJobCard
+						key={key}
+						job={{ ...job, columnId: job.columnId || column._id }}
+						columns={sortedColumns}
+					/>
+				))}
 				<CreateJobApplicationDialog
 					columnId={column._id}
 					boardId={boardId}
@@ -108,6 +117,8 @@ function DroppableColumn({
 
 export default function BoardSection({ board, userId }: BoardSectionProps) {
 	const columns = board.columns;
+	console.log("Job applciation", columns[0].jobApplications);
+	const sortedColumns = columns?.sort((a, b) => a.order - b.order) || [];
 	return (
 		<>
 			<div>
@@ -124,6 +135,7 @@ export default function BoardSection({ board, userId }: BoardSectionProps) {
 									column={column}
 									config={config}
 									boardId={board._id}
+									sortedColumns={sortedColumns}
 								/>
 							</>
 						);

@@ -169,7 +169,7 @@ export default function CreateJobApplicationDialog({
 							<Label htmlFor="notes">Notes </Label>
 							<Textarea
 								id="notes"
-								placeholder="Description of the role"
+								placeholder="Notes of the role"
 								rows={3}
 								onChange={(e) =>
 									setFormData({ ...formData, notes: e.target.value })

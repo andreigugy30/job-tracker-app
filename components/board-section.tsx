@@ -20,6 +20,7 @@ import {
 import { Button } from "./ui/button";
 import CreateJobApplicationDialog from "./job-section/create-job-application-dialog";
 import SortableJobCard from "./job-section/sortable-job-card";
+import { useBoard } from "@/lib/hooks/useBoards";
 
 type BoardSectionProps = {
 	board: Board;
@@ -116,14 +117,18 @@ function DroppableColumn({
 }
 
 export default function BoardSection({ board, userId }: BoardSectionProps) {
-	const columns = board.columns;
-	console.log("Job applciation", columns[0].jobApplications);
+	// const columns = board.columns;
+	// console.log("Job applciation", columns[0].jobApplications);
+
+	//call the  useBoard hook
+	const { columns, moveJob } = useBoard(board);
+
 	const sortedColumns = columns?.sort((a, b) => a.order - b.order) || [];
 	return (
 		<>
 			<div>
 				<div>
-					{columns.map((column, key) => {
+					{columns?.map((column, key) => {
 						const config = COLUMN_CONFIG[key] || {
 							color: "bg-gray-500",
 							icon: <Calendar />,

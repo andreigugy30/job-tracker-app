@@ -14,6 +14,7 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
+import { updateJobApplication } from "@/lib/actions/job-applications";
 
 type JobApplicationCardprops = {
 	job: JobApplication;
@@ -23,6 +24,17 @@ export default function JobApplicationCard({
 	job,
 	columns,
 }: JobApplicationCardprops) {
+	async function handleMove(newColumnId: string) {
+		try {
+			const result = await updateJobApplication(job._id, {
+				columnId: newColumnId,
+			});
+			return result;
+		} catch (error) {
+			console.error("Failed to move job application:", error);
+		}
+	}
+
 	return (
 		<>
 			<Card className="cursor-pointer transition-shadow hover:shadow">
@@ -55,6 +67,12 @@ export default function JobApplicationCard({
 									))}
 								</div>
 							)}
+							{job.notes && (
+								<p className="text-xs text-muted-foreground mb-2">
+									<span className="mr-1">Notes:</span>
+									{job.notes}
+								</p>
+							)}
 							{job.jobUrl && (
 								<a
 									target="_blank"
@@ -82,7 +100,10 @@ export default function JobApplicationCard({
 											{columns
 												.filter((column) => column._id !== job.columnId)
 												.map((col, key) => (
-													<DropdownMenuItem key={key}>
+													<DropdownMenuItem
+														key={key}
+														onClick={() => handleMove(col._id)}
+													>
 														Move to {col.name}
 													</DropdownMenuItem>
 												))}

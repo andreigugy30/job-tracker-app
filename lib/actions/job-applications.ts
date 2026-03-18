@@ -168,7 +168,7 @@ export async function updateJobApplication(
 	if (isMovingToDifferentColumn) {
 		//8. in this case remove  the job applciation from the old column
 		await Column.findByIdAndUpdate(currentColumnId, {
-			$pull: { jobApplication: id }, // removes an item from an array by passing the value of it : {jobApplications : id}
+			$pull: { jobApplications: id }, // removes an item from an array by passing the value of it : {jobApplications : id}
 		});
 
 		//9. Get all of the jobs currently  in the target column (where we want to move the job) excluding the one we are moving
@@ -246,7 +246,7 @@ export async function updateJobApplication(
 	}
 
 	const updated = await JobApplication.findByIdAndUpdate(id, updatesToApply, {
-		new: true,
+		new: true, //return the updated document
 	});
 
 	//Invalidate all cache in a specific route - add actually see that a job is changing the order or moved to another column

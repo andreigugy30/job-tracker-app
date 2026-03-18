@@ -117,9 +117,6 @@ function DroppableColumn({
 }
 
 export default function BoardSection({ board, userId }: BoardSectionProps) {
-	// const columns = board.columns;
-	// console.log("Job applciation", columns[0].jobApplications);
-
 	//call the  useBoard hook
 	const { columns, moveJob } = useBoard(board);
 

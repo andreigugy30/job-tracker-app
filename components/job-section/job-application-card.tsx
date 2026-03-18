@@ -26,9 +26,8 @@ export default function JobApplicationCard({
 }: JobApplicationCardprops) {
 	async function handleMove(newColumnId: string) {
 		try {
-			const result = await updateJobApplication(job._id, {
-				columnId: newColumnId,
-			});
+			const updatedJob = { ...job, columnId: newColumnId };
+			const result = await updateJobApplication(job._id, updatedJob);
 			return result;
 		} catch (error) {
 			console.error("Failed to move job application:", error);

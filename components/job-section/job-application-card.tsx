@@ -11,7 +11,10 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
-import { updateJobApplication } from "@/lib/actions/job-applications";
+import {
+	deleteJobApplication,
+	updateJobApplication,
+} from "@/lib/actions/job-applications";
 import {
 	Dialog,
 	DialogContent,
@@ -50,6 +53,18 @@ export default function JobApplicationCard({
 		try {
 			const updatedJob = { ...job, columnId: newColumnId };
 			const result = await updateJobApplication(job._id, updatedJob);
+			return result;
+		} catch (error) {
+			console.error("Failed to move job application:", error);
+		}
+	}
+
+	async function handleDelete() {
+		try {
+			const result = await deleteJobApplication(job._id);
+			if (result.error) {
+				console.error("Failed to delete a job application", result.error);
+			}
 			return result;
 		} catch (error) {
 			console.error("Failed to move job application:", error);
@@ -157,7 +172,7 @@ export default function JobApplicationCard({
 												))}
 										</>
 									)}
-									<DropdownMenuItem>
+									<DropdownMenuItem onClick={() => handleDelete()}>
 										<Trash2 className="h-5 w-5" />
 										Delete
 									</DropdownMenuItem>
@@ -281,13 +296,6 @@ export default function JobApplicationCard({
 					</form>
 				</DialogContent>
 			</Dialog>
-
-			{/* <EditJobApplicationDialog
-				job={job}
-				onOpenChange={closeEdit}
-				isOpen={isEditing}
-				handleEditChanges={handleEditChanges}
-			/> */}
 		</>
 	);
 }

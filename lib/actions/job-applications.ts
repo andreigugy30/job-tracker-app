@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getSession } from "../auth/auth";
 import connectDB from "../db";
 import { Board, Column, JobApplication } from "../models";
+import { success } from "better-auth";
 
 type JobApplicationData = {
 	company: string;
@@ -252,4 +253,36 @@ export async function updateJobApplication(
 	//Invalidate all cache in a specific route - add actually see that a job is changing the order or moved to another column
 	revalidatePath("/dashboard");
 	return { data: JSON.parse(JSON.stringify(updated)) };
+}
+
+export async function deleteJobApplication(id: string) {
+	//1. check to see if the session is valid
+
+	const session = await getSession();
+	if (!session?.user) {
+		return { error: "Unauthorized" };
+	}
+
+	//2.Get the job application
+
+	const jobApplication = await JobApplication.findById(id);
+
+	//3.If the job application doesn't exist or if the user with the session !== user is supposed to be return error
+
+	if (!jobApplication) {
+		return { error: "Job application not found" };
+	}
+
+	if (jobApplication.userId !== session?.user.id) {
+		return { error: "Unauthorized" };
+	}
+
+	await Column.findByIdAndUpdate(jobApplication.columnId, {
+		$pull: { jobApplications: id },
+	});
+
+	await JobApplication.deleteOne({ _id: id });
+
+	revalidatePath("/dashboard");
+	return { success: true };
 }

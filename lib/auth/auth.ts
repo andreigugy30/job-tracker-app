@@ -6,8 +6,8 @@ import initializeUserBoard from "../init-user-board";
 import connectDB from "../db";
 
 const mongooseInstance = await connectDB();
-const client = mongooseInstance?.connection.getClient();
-const db = client?.db();
+const client = mongooseInstance.connection.getClient();
+const db = client.db();
 export const auth = betterAuth({
 	database: mongodbAdapter(db, { client }),
 	session: {

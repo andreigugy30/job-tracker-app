@@ -6,6 +6,10 @@ import initializeUserBoard from "../init-user-board";
 import connectDB from "../db";
 
 const mongooseInstance = await connectDB();
+if (!mongooseInstance) {
+	throw new Error("Failed to connect to database");
+}
+
 const client = mongooseInstance.connection.getClient();
 const db = client.db();
 export const auth = betterAuth({

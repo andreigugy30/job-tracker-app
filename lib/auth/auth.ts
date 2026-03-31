@@ -26,13 +26,17 @@ export const auth = betterAuth({
 			create: {
 				after: async (user) => {
 					if (user.id) {
-						initializeUserBoard(user.id);
+						try {
+							await initializeUserBoard(user.id);
+						} catch (error) {
+							console.error("Failed to initialize user board:", error);
+						}
 					}
 				},
 			},
 		},
 	}, //help with situaTION WHEN WE WANT TO DO CERTAIN things at different stages when the user is created
-	trustedOrigins: ["jobtrackerapp-eta.vercel.app"],
+	trustedOrigins: ["https://jobtrackerapp-eta.vercel.app"],
 });
 
 //Use auth to detect if there is a current user sign in - for server components

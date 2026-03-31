@@ -32,6 +32,7 @@ export const auth = betterAuth({
 			},
 		},
 	}, //help with situaTION WHEN WE WANT TO DO CERTAIN things at different stages when the user is created
+	trustedOrigins: ["https://jobtrackerapp.vercel.app"],
 });
 
 //Use auth to detect if there is a current user sign in - for server components
